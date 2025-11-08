@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  /* ライトモードのデフォルト設定 */
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -8,12 +9,14 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* 以下のフォント変数はプロジェクト固有のものがなければ削除またはコメントアウトしてください */
+  /* --font-sans: var(--font-geist-sans); */
+  /* --font-mono: var(--font-geist-mono); */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
+    /* ダークモードの設定 */
     --background: #0a0a0a;
     --foreground: #ededed;
   }
@@ -23,4 +26,44 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* 💡 JapanMapSVGのスタイル */
+.geolonia-svg-map
+{
+  width: 100%;
+}
+
+.geolonia-svg-map .prefecture
+{
+  fill: #f7f7f7; /* デフォルトの色 (ライトモード) */
+  stroke: #666666; /* 県境の線 */
+  cursor: pointer;
+  
+  /* 💡 修正・追加: マウスオーバー時の滑らかなアニメーションのためにトランジションを強化 */
+  transition: fill 0.3s ease-in-out;
+}
+
+/* 💡 新規追加: マウスオーバー時のスタイル */
+.geolonia-svg-map .prefecture:hover {
+  /* マウスオーバー時のアクセントカラー (明るいインディゴ系) */
+  fill: #818cf8 !important; /* Tailwind indigo-400 相当 */
+}
+
+/* ダークモードでの地図のデフォルト色を調整 */
+@media (prefers-color-scheme: dark) {
+    .geolonia-svg-map .prefecture {
+        fill: #333333; /* ダークモードでのデフォルト色 */
+        stroke: #999999;
+    }
+    
+    /* 💡 ダークモードでのマウスオーバー色も調整 */
+    .geolonia-svg-map .prefecture:hover {
+        fill: #4F46E5 !important; /* Tailwind indigo-600 相当 */
+    }
+}
+
+.geolonia-svg-map .boundary-line
+{
+  stroke: #999999;
 }

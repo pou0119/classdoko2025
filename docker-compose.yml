@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    container_name: travelkey_app
+    ports:
+      - "3001:3000" # ローカルとコンテナのポートをマッピング
+    volumes:
+      # ホスト（ローカル）のファイルをコンテナに同期
+      - .:/app 
+      # node_modulesはホストから除外（コンテナ内のものを利用）
+      - /app/node_modules 
+    environment:
+      # Next.jsでファイルの変更を検知しやすくするための設定
+      CHOKIDAR_USEPOLLING: "true"
