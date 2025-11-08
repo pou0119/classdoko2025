@@ -1,6 +1,6 @@
 // src/components/NftCard.tsx
 import React from 'react';
-import { HotelNft } from './../src/data/nftMocks';
+import { HotelNft } from '@/src/data/nftMocks';
 
 interface NftCardProps {
   nft: HotelNft;

@@ -4,13 +4,17 @@
 import { useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import NftList from '@/components/NftList'; // 💡 NftListをインポート
+import NftList from '@/components/NftList'; 
 
 export default function SearchResultsPage() {
   const searchParams = useSearchParams();
   const region = searchParams.get('region');
   const prefecture = searchParams.get('prefecture');
   const area = searchParams.get('area');
+  // 💡 新しいパラメータを抽出
+  const checkIn = searchParams.get('checkIn');
+  const nights = searchParams.get('nights');
+  const guests = searchParams.get('guests');
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -28,17 +32,22 @@ export default function SearchResultsPage() {
                 {area && ` / ${area}`}
             </p>
             <p className="text-sm text-gray-500 mt-1">
-                {region && `(${region}地方)`}
+                {checkIn && `チェックイン: ${checkIn}`}
+                {nights && `, ${nights}泊`}
+                {guests && `, ${guests}名`}
             </p>
         </div>
 
 
-        {/* 💡 NFTリストの配置 */}
+        {/* 💡 NftListに全ての検索条件を渡す */}
         <div className="max-w-7xl w-full">
             <NftList 
                 region={region} 
                 prefecture={prefecture} 
                 area={area} 
+                checkIn={checkIn}
+                nights={nights}
+                guests={guests}
             />
         </div>
 
