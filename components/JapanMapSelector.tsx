@@ -2,10 +2,10 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from 'next/link'; // 💡 next/link をインポート
+import Link from 'next/link';
 import JapanMapSVG from "./JapanMapSVG"; 
 
-// 地方・都道府県・地域データ
+// 地方・都道府県・地域データ (変更なし)
 const regionsData = {
   "北海道・東北": {
     北海道: ["札幌市", "函館市", "旭川市"],
@@ -27,22 +27,17 @@ const regionsData = {
       "久留米・八女・筑後", 
       "糸島・前原"
     ],
-    // 💡 他の九州の県（佐賀県など）もここに追加していく
   }
 } as const;
 
-// 型を作成
+// 型定義 (変更なし)
 type Region = keyof typeof regionsData;
-
-// すべての都道府県名のユニオン型を作成し、型ガードのエラーを回避
 type AllPrefectures = 
                      keyof (typeof regionsData)["北海道・東北"] | 
                      keyof (typeof regionsData)["関東"] |
                      keyof (typeof regionsData)["中部"] |
                      keyof (typeof regionsData)["九州・沖縄"];
 
-
-// 型ガード関数: TypeScriptのキー推論によるエラーを回避するため、戻り値の型を AllPrefectures に調整
 function isPrefectureOfRegion(
   region: Region,
   prefecture: string | null
@@ -57,14 +52,19 @@ export default function JapanMapSelector() {
   const [selectedRegion, setSelectedRegion] = useState<Region | null>(null);
   const [selectedPrefecture, setSelectedPrefecture] = useState<string | null>(null);
   const [selectedArea, setSelectedArea] = useState<string | null>(null);
+  
+  // 💡 日程・泊数・人数 State を追加
+  const [checkInDate, setCheckInDate] = useState<string>('');
+  const [nights, setNights] = useState<number>(1);
+  const [guests, setGuests] = useState<number>(2);
 
-  // 都道府県選択肢のデータ取得ヘルパー関数 (string[]を返す)
+  // 都道府県選択肢のデータ取得ヘルパー関数 (変更なし)
   const getPrefectures = (): string[] => {
     if (!selectedRegion) return [];
     return Object.keys(regionsData[selectedRegion]); 
   };
   
-  // 地域選択肢のデータ取得ヘルパー関数
+  // 地域選択肢のデータ取得ヘルパー関数 (変更なし)
   const getAreas = (): string[] => {
     if (selectedRegion && selectedPrefecture && isPrefectureOfRegion(selectedRegion, selectedPrefecture)) {
         const prefectureKey = selectedPrefecture as keyof typeof regionsData[typeof selectedRegion];
@@ -73,11 +73,10 @@ export default function JapanMapSelector() {
     return [];
   }
   
-  // 💡 マップまたはボタンから都道府県が選択された際のハンドラ
+  // マップまたはボタンから都道府県が選択された際のハンドラ (変更なし)
   const handlePrefectureClick = (prefectureName: string) => {
     let correspondingRegion: Region | null = null;
     
-    // 都道府県名から対応する地方を検索
     for (const region in regionsData) {
         const regionKey = region as Region;
         if (prefectureName in regionsData[regionKey]) {
@@ -87,8 +86,8 @@ export default function JapanMapSelector() {
     }
     
     if (correspondingRegion) {
-        setSelectedRegion(correspondingRegion); // 地方を更新
-        setSelectedPrefecture(prefectureName); // 都道府県を更新
+        setSelectedRegion(correspondingRegion);
+        setSelectedPrefecture(prefectureName);
         setSelectedArea(null);
     } else {
         console.error(`地方データに ${prefectureName} が見つかりません。`);
@@ -99,21 +98,29 @@ export default function JapanMapSelector() {
     setSelectedRegion(null); 
     setSelectedPrefecture(null); 
     setSelectedArea(null);
+    setCheckInDate('');
+    setNights(1);
+    setGuests(2);
   };
 
-  // 💡 検索URLを生成するヘルパー関数
+  // 💡 検索URLを生成するヘルパー関数 (全Stateを追加)
   const generateSearchUrl = () => {
     const params = new URLSearchParams();
     if (selectedRegion) params.append('region', selectedRegion);
     if (selectedPrefecture) params.append('prefecture', selectedPrefecture);
     if (selectedArea) params.append('area', selectedArea);
+    if (checkInDate) params.append('checkIn', checkInDate);
+    params.append('nights', nights.toString());
+    params.append('guests', guests.toString());
     return `/search-results?${params.toString()}`;
   };
+
+  const isSearchDisabled = !selectedPrefecture || !checkInDate;
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       
-      {/* 地方/都道府県 選択 タイトル */}
+      {/* 地方/都道府県 選択 タイトル (変更なし) */}
       <h2 className="text-2xl sm:text-3xl font-bold mb-6 text-center text-gray-800">
         <span className="text-indigo-600">旅の目的地</span>を地図から選ぶ
       </h2>
@@ -121,7 +128,7 @@ export default function JapanMapSelector() {
       {/* マップと選択肢を横並びにするコンテナ */}
       <div className="flex flex-col md:flex-row gap-8">
 
-        {/* 1. マップ表示エリア (幅広めに設定) */}
+        {/* 1. マップ表示エリア */}
         <div className="md:w-3/5">
           <JapanMapSVG 
             onPrefectureClick={handlePrefectureClick} 
@@ -129,18 +136,18 @@ export default function JapanMapSelector() {
           />
         </div>
 
-        {/* 2. 選択詳細エリア (地図の横に配置, 幅を絞る) */}
+        {/* 2. 選択詳細エリア */}
         <div className="md:w-2/5">
           
-          {selectedRegion && selectedPrefecture ? (
-            /* 選択されている場合: 選択結果と地域ボタンを表示 */
+          {selectedPrefecture ? (
             <div className="h-full">
-              {/* 選択結果のUI (豪華版) */}
+              
+              {/* 選択結果のUI */}
               <div className="mt-0 p-4 border-2 border-indigo-300 rounded-xl bg-indigo-50 text-indigo-800 font-bold shadow-lg flex items-center justify-between mb-8">
                 <div>
                   <p className="text-sm text-indigo-500 mb-1">現在の選択</p>
                   <p className="text-xl sm:text-2xl">
-                    {selectedRegion}
+                    {selectedRegion && selectedRegion}
                     {selectedPrefecture && ` / ${selectedPrefecture}`}
                     {selectedArea && ` / ${selectedArea}`}
                   </p>
@@ -173,16 +180,75 @@ export default function JapanMapSelector() {
                 </div>
               </div>
 
-              {/* 💡 検索ボタンを追加 */}
+              {/* --- 日程・泊数・人数選択フォーム --- */}
+              <div className="mt-8 pt-4 border-t border-gray-200">
+                <h3 className="text-xl font-bold mb-4 text-gray-800">日程と人数</h3>
+                <div className="space-y-4">
+                  {/* 1. チェックイン日 */}
+                  <div className="flex flex-col">
+                    <label className="text-sm font-medium text-gray-700 mb-1">チェックイン日 <span className="text-red-500">*</span></label>
+                    <input
+                      type="date"
+                      value={checkInDate}
+                      onChange={(e) => setCheckInDate(e.target.value)}
+                      className="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm text-gray-900 font-normal"
+                      required
+                    />
+                  </div>
+
+                  {/* 2. 泊数と人数 */}
+                  <div className="flex space-x-4">
+                    {/* 泊数 */}
+                    <div className="flex flex-col w-1/2">
+                      <label className="text-sm font-medium text-gray-700 mb-1">泊数</label>
+                      <select
+                        value={nights}
+                        onChange={(e) => setNights(Number(e.target.value))}
+                        className="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm text-gray-900 font-normal"
+                      >
+                        {[...Array(7)].map((_, i) => (
+                          <option key={i + 1} value={i + 1}>{i + 1}泊</option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* 人数 */}
+                    <div className="flex flex-col w-1/2">
+                      <label className="text-sm font-medium text-gray-700 mb-1">人数</label>
+                      <select
+                        value={guests}
+                        onChange={(e) => setGuests(Number(e.target.value))}
+                        className="p-3 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 shadow-sm text-gray-900 font-normal"
+                      >
+                        {[...Array(10)].map((_, i) => (
+                          <option key={i + 1} value={i + 1}>{i + 1}名</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* --- 終了: 日程・泊数・人数選択フォーム --- */}
+
+
+              {/* 💡 検索ボタン */}
               <div className="mt-8 text-center">
-                <Link href={generateSearchUrl()} passHref legacyBehavior>
-                  <a className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full shadow-lg text-white bg-green-600 hover:bg-green-700 md:py-4 md:text-lg md:px-10 transition duration-300 transform hover:scale-105">
-                    <svg className="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                      <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                    </svg>
-                    この地域で検索
-                  </a>
+                <Link 
+                  href={generateSearchUrl()} 
+                  className={`inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full shadow-lg transition duration-300 transform md:py-4 md:text-lg md:px-10 ${
+                    isSearchDisabled 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-green-600 hover:bg-green-700 hover:scale-105'
+                  }`}
+                  aria-disabled={isSearchDisabled}
+                  tabIndex={isSearchDisabled ? -1 : 0}
+                  onClick={(e) => { if (isSearchDisabled) e.preventDefault(); }}
+                >
+                  <svg className="-ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
+                  </svg>
+                  この地域で検索
                 </Link>
+                {isSearchDisabled && <p className="text-red-600 font-semibold text-sm mt-2">チェックイン日を選択してください。</p>}
               </div>
 
             </div>

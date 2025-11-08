@@ -4,13 +4,18 @@
 import { useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import NftList from '@/components/NftList'; // 💡 NftListをインポート
+import NftList from '@/components/NftList'; 
 
 export default function SearchResultsPage() {
   const searchParams = useSearchParams();
   const region = searchParams.get('region');
   const prefecture = searchParams.get('prefecture');
   const area = searchParams.get('area');
+  
+  // 💡 修正箇所: 新しいクエリパラメータを取得
+  const checkIn = searchParams.get('checkIn');
+  const nights = searchParams.get('nights');
+  const guests = searchParams.get('guests');
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -28,17 +33,23 @@ export default function SearchResultsPage() {
                 {area && ` / ${area}`}
             </p>
             <p className="text-sm text-gray-500 mt-1">
-                {region && `(${region}地方)`}
+                {/* 💡 修正箇所: 日程などの情報も表示に追加 */}
+                {checkIn && `チェックイン: ${checkIn}`}
+                {nights && `, ${nights}泊`}
+                {guests && `, ${guests}名`}
+                {region && ` (${region}地方)`}
             </p>
         </div>
 
-
-        {/* 💡 NFTリストの配置 */}
+        {/* 💡 修正箇所: 不足していたプロパティをNftListに渡す */}
         <div className="max-w-7xl w-full">
             <NftList 
                 region={region} 
                 prefecture={prefecture} 
-                area={area} 
+                area={area}
+                checkIn={checkIn}
+                nights={nights}
+                guests={guests}
             />
         </div>
 
