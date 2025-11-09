@@ -3,7 +3,6 @@ import hre from "hardhat";
 const { ethers } = hre;
 
 // 💡 モックデータ (合計25個)
-// 💡 すべてリアルな画像に差し替えたモックデータ (合計25個)
 const hotelNfts = [
   // --- 既存の10個 ---
   {
@@ -75,7 +74,7 @@ const hotelNfts = [
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市中央区大濠公園1-1" },
     description: "大濠公園の絶景を臨む静かな立地。仮約キャンセル待ちNFT。",
     imageUrl: "https://images.unsplash.com/photo-1598928636135-d146006ff4be?auto=format&fit=crop&w=800&q=80",
-    priceEth: 0.7, priceJpy: 280000, purchaseDeadline: "2024-11-13T15:00:00Z", nights: 1, isConfirmed: false, hasMeals: true, guests: 2, checkInDate: "2025-11-13", checkOutDate: "2025-11-14", amenities: ["Wi-Fi", "朝食付き", "公園ビュー", "レンタルサイクル"],
+    priceEth: 0.7, priceJpy: 280000, purchaseDeadline: "2024-11-13T15:00:00Z", nights: 1, isConfirmed: false, hasMeals: true, guests: 2, checkInDate: "2025-01-20", checkOutDate: "2025-01-21", amenities: ["Wi-Fi", "朝食付き", "公園ビュー", "レンタルサイクル"],
     ownerAddress: "0x00aabb...ccdd", tokenUri: "ipfs://metadata009.json",
   },
   {
@@ -87,7 +86,7 @@ const hotelNfts = [
     ownerAddress: "0xffee00...11ee", tokenUri: "ipfs://metadata010.json",
   },
   
-  // --- 追加データ (11〜25) も全てリアル画像に変更！ ---
+  // --- 追加データ (11〜25) ---
   // 1名確約
   {
     id: "0x123abc...011", name: "博多駅前カプセルリゾート",
@@ -101,7 +100,7 @@ const hotelNfts = [
     id: "0x123abc...012", name: "中洲ビジネスホテル",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市博多区中洲3-4" },
     description: "中洲の中心にあるシンプルな確約シングル。",
-    imageUrl: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80",
     priceEth: 0.2, priceJpy: 80000, purchaseDeadline: "2025-11-10T17:00:00Z", nights: 1, isConfirmed: true, hasMeals: true, guests: 1, checkInDate: "2025-11-11", checkOutDate: "2025-11-12", amenities: ["Wi-Fi", "朝食付き"],
     ownerAddress: "0x2222...2222", tokenUri: "ipfs://metadata012.json",
   },
@@ -109,8 +108,8 @@ const hotelNfts = [
     id: "0x123abc...013", name: "天神駅近ゲストハウス",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市中央区舞鶴1-2" },
     description: "天神駅から徒歩5分。格安の確約ドミトリー枠。",
-    imageUrl: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80",
-    priceEth: 0.1, priceJpy: 35000, purchaseDeadline: "2025-11-11T12:00:00Z", nights: 1, isConfirmed: true, hasMeals: false, guests: 1, checkInDate: "2025-11-11", checkOutDate: "2025-11-12", amenities: ["Wi-Fi", "ランドリー"],
+    imageUrl: "https://images.unsplash.com/photo-1520277739336-7bf67edfa768?auto=format&fit=crop&w=800&q=80",
+    priceEth: 0.1, priceJpy: 35000, purchaseDeadline: "2025-11-11T12:00:00Z", nights: 1, isConfirmed: true, hasMeals: false, guests: 1, checkInDate: "2025-11-11", checkOutDate: "2025-11-13", amenities: ["Wi-Fi", "ランドリー"],
     ownerAddress: "0x3333...3333", tokenUri: "ipfs://metadata013.json",
   },
   // 2名確約
@@ -118,7 +117,7 @@ const hotelNfts = [
     id: "0x123abc...014", name: "西中洲ブティックホテル",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市中央区西中洲6-1" },
     description: "西中洲のお洒落なブティックホテル。カップル向け確約。",
-    imageUrl: "https://images.unsplash.com/photo-1590490360182-f33d576ad500?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?auto=format&fit=crop&w=800&q=80",
     priceEth: 0.4, priceJpy: 170000, purchaseDeadline: "2025-11-10T14:00:00Z", nights: 1, isConfirmed: true, hasMeals: false, guests: 2, checkInDate: "2025-11-11", checkOutDate: "2025-11-12", amenities: ["Wi-Fi", "ミニバー"],
     ownerAddress: "0x4444...4444", tokenUri: "ipfs://metadata014.json",
   },
@@ -126,7 +125,7 @@ const hotelNfts = [
     id: "0x123abc...015", name: "博多キャナルシティホテル",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市博多区祇園町7-7" },
     description: "キャナルシティ隣接。ショッピングに便利な確約ツイン。",
-    imageUrl: "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=800&q=80",
     priceEth: 0.5, priceJpy: 210000, purchaseDeadline: "2025-11-11T13:00:00Z", nights: 1, isConfirmed: true, hasMeals: true, guests: 2, checkInDate: "2025-11-11", checkOutDate: "2025-11-13", amenities: ["Wi-Fi", "朝食付き", "プール"],
     ownerAddress: "0x5555...5555", tokenUri: "ipfs://metadata015.json",
   },
@@ -134,7 +133,7 @@ const hotelNfts = [
     id: "0x123abc...016", name: "福岡空港アクセスホテル",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市博多区東比恵1-1" },
     description: "空港からのアクセス抜群。ビジネス・観光に便利な確約。",
-    imageUrl: "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80",
     priceEth: 0.35, priceJpy: 140000, purchaseDeadline: "2025-11-11T14:00:00Z", nights: 1, isConfirmed: true, hasMeals: false, guests: 2, checkInDate: "2025-11-11", checkOutDate: "2025-11-12", amenities: ["Wi-Fi", "送迎サービス"],
     ownerAddress: "0x6666...6666", tokenUri: "ipfs://metadata016.json",
   },
@@ -143,7 +142,7 @@ const hotelNfts = [
     id: "0x123abc...017", name: "大名ファミリースイート",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市中央区大名1-1" },
     description: "大名の広々としたファミリー向けスイート。確約。",
-    imageUrl: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=800&q=80",
     priceEth: 1.2, priceJpy: 520000, purchaseDeadline: "2025-11-10T16:00:00Z", nights: 2, isConfirmed: true, hasMeals: true, guests: 4, checkInDate: "2025-11-11", checkOutDate: "2025-11-13", amenities: ["Wi-Fi", "キッチン", "朝食付き", "バレーサービス"],
     ownerAddress: "0x7777...7777", tokenUri: "ipfs://metadata017.json",
   },
@@ -151,7 +150,7 @@ const hotelNfts = [
     id: "0x123abc...018", name: "百道浜レジデンス",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市早良区百道浜2-2" },
     description: "ビーチアクセス可能な豪華レジデンス。友人グループに最適。",
-    imageUrl: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=800&q=80",
     priceEth: 1.5, priceJpy: 680000, purchaseDeadline: "2025-11-10T18:00:00Z", nights: 3, isConfirmed: true, hasMeals: false, guests: 4, checkInDate: "2025-11-11", checkOutDate: "2025-11-14", amenities: ["Wi-Fi", "オーシャンビュー", "BBQ", "駐車場"],
     ownerAddress: "0x8888...8888", tokenUri: "ipfs://metadata018.json",
   },
@@ -168,7 +167,7 @@ const hotelNfts = [
     id: "0x123abc...020", name: "天神格安ステイ (仮約)",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市中央区天神4-1" },
     description: "天神最安値の仮約シングル。キャンセルに期待。",
-    imageUrl: "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=800&q=80",
     priceEth: 0.05, priceJpy: 20000, purchaseDeadline: "2025-12-05T15:00:00Z", nights: 1, isConfirmed: false, hasMeals: false, guests: 1, checkInDate: "2025-12-11", checkOutDate: "2025-12-12", amenities: ["Wi-Fi", "デスク"],
     ownerAddress: "0xaaaa...aaaa", tokenUri: "ipfs://metadata020.json",
   },
@@ -176,7 +175,7 @@ const hotelNfts = [
     id: "0x123abc...021", name: "博多駅周辺 ドミトリー (仮約)",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市博多区比恵町1-1" },
     description: "博多駅からアクセスしやすいドミトリー。仮約枠。",
-    imageUrl: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1596495578065-6e0763fa1178?auto=format&fit=crop&w=800&q=80",
     priceEth: 0.08, priceJpy: 25000, purchaseDeadline: "2025-12-08T10:00:00Z", nights: 2, isConfirmed: false, hasMeals: false, guests: 1, checkInDate: "2025-12-11", checkOutDate: "2025-12-13", amenities: ["Wi-Fi", "ランドリー"],
     ownerAddress: "0xbbbb...bbbb", tokenUri: "ipfs://metadata021.json",
   },
@@ -185,7 +184,7 @@ const hotelNfts = [
     id: "0x123abc...022", name: "大名カジュアルツイン (仮約)",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市中央区大名2-1" },
     description: "大名でのショッピングに最適。仮約のツインルーム。",
-    imageUrl: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1590490360182-f33d576ad500?auto=format&fit=crop&w=800&q=80",
     priceEth: 0.25, priceJpy: 95000, purchaseDeadline: "2025-12-01T17:00:00Z", nights: 1, isConfirmed: false, hasMeals: true, guests: 2, checkInDate: "2025-12-11", checkOutDate: "2025-12-12", amenities: ["Wi-Fi", "朝食付き"],
     ownerAddress: "0xccccc...cccc", tokenUri: "ipfs://metadata022.json",
   },
@@ -193,7 +192,7 @@ const hotelNfts = [
     id: "0x123abc...023", name: "中洲アートホテル (仮約)",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市博多区中洲5-5" },
     description: "中洲にあるアートがテーマのホテル。仮約のダブルルーム。",
-    imageUrl: "https://images.unsplash.com/photo-1582719478257-cf9b062145e5?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1549294413-26f195200c16?auto=format&fit=crop&w=800&q=80",
     priceEth: 0.3, priceJpy: 110000, purchaseDeadline: "2025-12-07T12:00:00Z", nights: 2, isConfirmed: false, hasMeals: false, guests: 2, checkInDate: "2025-12-11", checkOutDate: "2025-12-13", amenities: ["Wi-Fi", "ミニバー"],
     ownerAddress: "0xddddd...dddd", tokenUri: "ipfs://metadata023.json",
   },
@@ -202,7 +201,7 @@ const hotelNfts = [
     id: "0x123abc...024", name: "百道浜リゾート (仮約)",
     location: { region: "九州・沖縄", prefecture: "福岡県", area: "福岡市（博多駅周辺・天神周辺）", address: "福岡県福岡市早良区百道浜1-1" },
     description: "百道浜の広々としたリゾートマンション。仮約。",
-    imageUrl: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=800&q=80",
     priceEth: 0.6, priceJpy: 250000, purchaseDeadline: "2025-12-03T10:00:00Z", nights: 3, isConfirmed: false, hasMeals: false, guests: 4, checkInDate: "2025-12-11", checkOutDate: "2025-12-14", amenities: ["Wi-Fi", "キッチン", "オーシャンビュー"],
     ownerAddress: "0xeeeee...eeee", tokenUri: "ipfs://metadata024.json",
   },
@@ -216,14 +215,18 @@ const hotelNfts = [
   },
 ];
 
+
 async function main() {
-  const [deployer] = await ethers.getSigners();
+  // 💡 複数のアカウントを取得
+  const signers = await ethers.getSigners();
+  const admin = signers[0];      // プラットフォーム運営者
+  // Account #1〜#10 を出品ユーザーとして使う
+  const sellers = signers.slice(1, 11); 
 
-  console.log("Deploying contracts with the account:", deployer.address);
-  console.log("Account balance:", (await ethers.provider.getBalance(deployer.address)).toString());
+  console.log("Deploying contracts with the account:", admin.address);
 
-  const HotelNFTFactory = await ethers.getContractFactory("HotelNFT");
-  const hotelNFT = await HotelNFTFactory.deploy(deployer.address);
+  const HotelNFT = await ethers.getContractFactory("HotelNFT");
+  const hotelNFT = await HotelNFT.deploy(admin.address);
 
   await hotelNFT.waitForDeployment();
 
@@ -232,14 +235,15 @@ async function main() {
 
   console.log("\nMinting sample NFTs...");
   
-  // 💡 タイムスタンプ生成ヘルパー (秒単位)
+  // 💡 タイムスタンプ生成ヘルパー
   const getTimestamp = (dateString) => Math.floor(new Date(dateString).getTime() / 1000);
 
-  // 💡 全てのモックデータをミントするループ
   for (let i = 0; i < hotelNfts.length; i++) {
     const nft = hotelNfts[i];
     
-    // 構造体に合わせてデータを整形 (Solidityの定義順と数に合わせる)
+    // 💡 ループごとに異なる売り手（出品者）を割り当てる
+    const seller = sellers[i % sellers.length];
+
     const metadata = {
         name: nft.name,
         region: nft.location.region,
@@ -248,10 +252,8 @@ async function main() {
         addressLine: nft.location.address,
         description: nft.description,
         imageUrl: nft.imageUrl,
-        // Ethers.js v6 の parseEther を使用
         priceEth: ethers.parseEther(nft.priceEth.toString()), 
         priceJpy: BigInt(nft.priceJpy),
-        // 💡 タイムスタンプを BigInt に変換
         purchaseDeadline: BigInt(getTimestamp(nft.purchaseDeadline)),
         nights: BigInt(nft.nights),
         isConfirmed: nft.isConfirmed,
@@ -261,14 +263,13 @@ async function main() {
         checkOutDate: BigInt(getTimestamp(nft.checkOutDate)),
     };
     
-    // トークンIDはインデックス+1を使用
     const tokenId = i + 1;
     const tokenURI = nft.tokenUri || `ipfs://default_uri_${tokenId}`;
 
-    // mintHotelNFT の呼び出し (4つ目の引数として amenities を渡す)
     try {
-        await hotelNFT.mintHotelNFT(deployer.address, metadata, tokenURI, nft.amenities);
-        console.log(`Minted NFT #${tokenId}: ${nft.name}`);
+        // 💡 Adminが代理でミントし、所有権を seller に渡す
+        await hotelNFT.connect(admin).mintHotelNFT(seller.address, metadata, tokenURI, nft.amenities);
+        console.log(`Minted NFT #${tokenId}: ${nft.name} (Owner: ${seller.address.slice(0, 6)}...)`);
     } catch (e) {
         console.error(`❌ Failed to mint NFT #${tokenId} (${nft.name}):`, e.message);
     }
