@@ -71,7 +71,7 @@ contract HotelNFT is ERC721URIStorage, Ownable, ReentrancyGuard {
         
         hotelMetadata[newTokenId] = metadata;
         tokenAmenities[newTokenId] = amenities; // 💡 新しいマッピングに保存
-        isForSale[newTokenId] = true;
+        isForSale[newTokenId] = false;
 
         emit HotelNFTMinted(newTokenId, to, metadata.name);
         return newTokenId;
@@ -104,6 +104,10 @@ contract HotelNFT is ERC721URIStorage, Ownable, ReentrancyGuard {
     function getHotelMetadata(uint256 tokenId) public view returns (HotelMetadata memory) {
         ownerOf(tokenId);
         return hotelMetadata[tokenId];
+    }
+    function setForSale(uint256 tokenId, bool forSale) public {
+        require(ownerOf(tokenId) == msg.sender, "Not the owner");
+        isForSale[tokenId] = forSale;
     }
     
     // ... (getAllTokenIds, supportsInterface なども省略) ...

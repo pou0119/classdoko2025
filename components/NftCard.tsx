@@ -11,7 +11,6 @@ import { HOTEL_NFT_CONTRACT_ADDRESS } from '@/src/config/contract';
 
 interface NftCardProps {
   nft: HotelNft;
-  // 💡 モード切り替えプロパティ
   mode?: 'purchase' | 'sell' | 'listing'; 
 }
 
@@ -35,7 +34,6 @@ const getConfirmationLabel = (isConfirmed: boolean) => {
         : <span className="inline-flex items-center rounded-full bg-yellow-100 px-3 py-0.5 text-sm font-medium text-yellow-800">仮約</span>;
 };
 
-// 💡 デフォルトモードは 'purchase'
 export default function NftCard({ nft, mode = 'purchase' }: NftCardProps) {
   const router = useRouter();
   const { isConnected } = useAccount();
@@ -47,16 +45,16 @@ export default function NftCard({ nft, mode = 'purchase' }: NftCardProps) {
   const isUserRejection = error?.message.toLowerCase().includes('user rejected') || 
                           error?.message.toLowerCase().includes('user denied');
 
-  // 💡 購入成功時の自動リロード
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
-        window.location.reload();
+        window.location.reload(); // 成功したらリロード
       }, 2000);
       return () => clearTimeout(timer);
     }
   }, [isSuccess]);
 
+  // 購入処理
   const handlePurchase = async () => {
     if (!isConnected) { alert('ウォレットを接続してください'); return; }
     if (tokenId === 0) return;
@@ -71,29 +69,62 @@ export default function NftCard({ nft, mode = 'purchase' }: NftCardProps) {
     } catch (err) { console.error(err); }
   };
 
-  // 💡 出品処理 (プレースホルダー)
+  // 💡 出品処理 (setForSale = true)
   const handleSell = async () => {
-      alert(`NFT #${tokenId} を出品しますか？`);
+      if (!isConnected) { alert('ウォレットを接続してください'); return; }
+      if (tokenId === 0) return;
+      
+      // 確認ダイアログ (簡易的)
+      if (!confirm(`NFT #${tokenId} を出品しますか？`)) return;
+
+      try {
+        writeContract({
+          address: HOTEL_NFT_CONTRACT_ADDRESS as Address,
+          abi: hotelNFTABI,
+          functionName: 'setForSale',
+          args: [BigInt(tokenId), true], // true = 販売開始
+        });
+      } catch (err) { console.error(err); }
   };
 
-  // 💡 出品取り消し処理 (プレースホルダー)
+  // 💡 出品取り消し処理 (setForSale = false)
   const handleCancelListing = async () => {
-      alert(`出品を取り消しますか？`);
+      if (!isConnected) { alert('ウォレットを接続してください'); return; }
+      if (tokenId === 0) return;
+
+      if (!confirm(`出品を取り消しますか？`)) return;
+
+      try {
+        writeContract({
+          address: HOTEL_NFT_CONTRACT_ADDRESS as Address,
+          abi: hotelNFTABI,
+          functionName: 'setForSale',
+          args: [BigInt(tokenId), false], // false = 販売停止
+        });
+      } catch (err) { console.error(err); }
   };
 
-  // 💡 モードに応じたアクションボタンのレンダリング
   const renderActionButton = () => {
+    const isDisabled = isPending || isConfirming || !isConnected || isSuccess;
     switch (mode) {
         case 'sell':
             return (
-                <button onClick={handleSell} className="bg-orange-500 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-orange-600 transition duration-200 shadow-md">
-                    出品する
+                <button 
+                    onClick={handleSell}
+                    disabled={isDisabled}
+                    className={`bg-orange-500 text-white px-6 py-2 rounded-lg text-sm font-bold transition duration-200 shadow-md ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-orange-600'}`}
+                >
+                    {isPending || isConfirming ? '処理中...' : isSuccess ? '完了！' : '出品する'}
                 </button>
             );
         case 'listing':
             return (
-                <button onClick={handleCancelListing} className="bg-gray-500 text-white px-6 py-2 rounded-lg text-sm font-bold hover:bg-gray-600 transition duration-200 shadow-md">
-                    出品取消
+                <button 
+                    onClick={handleCancelListing}
+                    disabled={isDisabled}
+                    className={`bg-gray-500 text-white px-6 py-2 rounded-lg text-sm font-bold transition duration-200 shadow-md ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-600'}`}
+                >
+                    {isPending || isConfirming ? '処理中...' : isSuccess ? '完了！' : '出品取消'}
                 </button>
             );
         case 'purchase':
@@ -101,12 +132,8 @@ export default function NftCard({ nft, mode = 'purchase' }: NftCardProps) {
             return (
                 <button 
                   onClick={handlePurchase}
-                  disabled={isPending || isConfirming || !isConnected || isSuccess}
-                  className={`px-6 py-2 rounded-lg text-sm font-bold transition duration-200 shadow-md ${
-                      isSuccess 
-                          ? 'bg-green-600 text-white cursor-default' 
-                          : 'bg-indigo-600 text-white hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed'
-                  }`}
+                  disabled={isDisabled}
+                  className={`bg-indigo-600 text-white px-6 py-2 rounded-lg text-sm font-bold transition duration-200 shadow-md ${isDisabled ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-indigo-700'}`}
                 >
                   {isPending || isConfirming ? '処理中...' : isSuccess ? '完了！' : '購入'}
                 </button>
@@ -120,7 +147,6 @@ export default function NftCard({ nft, mode = 'purchase' }: NftCardProps) {
         <img src={nft.imageUrl} alt={nft.name} className="w-full h-full object-cover" />
         <div className="absolute top-3 left-3">{getConfirmationLabel(nft.isConfirmed)}</div>
         
-        {/* 💡 モードに応じたステータスバッジ */}
         {mode === 'sell' && <div className="absolute top-3 right-3 bg-blue-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-sm">保有中</div>}
         {mode === 'listing' && <div className="absolute top-3 right-3 bg-orange-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-sm">出品中</div>}
       </div>
@@ -152,8 +178,6 @@ export default function NftCard({ nft, mode = 'purchase' }: NftCardProps) {
             <button onClick={() => setShowDetails(!showDetails)} className="text-gray-500 text-xs underline hover:text-gray-700 transition mb-1">
               {showDetails ? '詳細を閉じる' : '詳細を確認'}
             </button>
-            
-            {/* 💡 モードに応じたボタンを表示 */}
             {renderActionButton()}
           </div>
         </div>

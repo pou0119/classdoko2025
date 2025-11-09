@@ -29,6 +29,40 @@ export const hotelNFTABI = [
     "type": "event"
   },
   {
+    "inputs": [
+      { "internalType": "address", "name": "to", "type": "address" },
+      {
+        "components": [
+          { "internalType": "string", "name": "name", "type": "string" },
+          { "internalType": "string", "name": "region", "type": "string" },
+          { "internalType": "string", "name": "prefecture", "type": "string" },
+          { "internalType": "string", "name": "area", "type": "string" },
+          { "internalType": "string", "name": "addressLine", "type": "string" },
+          { "internalType": "string", "name": "description", "type": "string" },
+          { "internalType": "string", "name": "imageUrl", "type": "string" },
+          { "internalType": "uint256", "name": "priceEth", "type": "uint256" },
+          { "internalType": "uint256", "name": "priceJpy", "type": "uint256" },
+          { "internalType": "uint256", "name": "purchaseDeadline", "type": "uint256" },
+          { "internalType": "uint256", "name": "nights", "type": "uint256" },
+          { "internalType": "bool", "name": "isConfirmed", "type": "bool" },
+          { "internalType": "bool", "name": "hasMeals", "type": "bool" },
+          { "internalType": "uint256", "name": "guests", "type": "uint256" },
+          { "internalType": "uint256", "name": "checkInDate", "type": "uint256" },
+          { "internalType": "uint256", "name": "checkOutDate", "type": "uint256" }
+        ],
+        "internalType": "struct HotelNFT.HotelMetadata",
+        "name": "metadata",
+        "type": "tuple"
+      },
+      { "internalType": "string", "name": "tokenURI", "type": "string" },
+      { "internalType": "string[]", "name": "amenities", "type": "string[]" }
+    ],
+    "name": "mintHotelNFT",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [{"internalType": "uint256","name": "tokenId","type": "uint256"}],
     "name": "getHotelMetadata",
     "outputs": [
@@ -74,7 +108,7 @@ export const hotelNFTABI = [
   {
     "inputs": [{"internalType": "uint256","name": "tokenId","type": "uint256"}],
     "name": "tokenAmenities",
-    "outputs": [{"internalType": "string","name": "","type": "string"}],
+    "outputs": [{"internalType": "string[]","name": "","type": "string[]"}], // 💡 string[] に修正
     "stateMutability": "view",
     "type": "function"
   },
@@ -90,6 +124,24 @@ export const hotelNFTABI = [
     "name": "getTotalSupply",
     "outputs": [{"internalType": "uint256","name": "","type": "uint256"}],
     "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{"internalType": "uint256","name": "tokenId","type": "uint256"}],
+    "name": "isForSale",
+    "outputs": [{"internalType": "bool","name": "","type": "bool"}],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  // 💡 追加: setForSale の定義
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "tokenId", "type": "uint256" },
+      { "internalType": "bool", "name": "forSale", "type": "bool" }
+    ],
+    "name": "setForSale",
+    "outputs": [],
+    "stateMutability": "nonpayable",
     "type": "function"
   }
 ] as const;

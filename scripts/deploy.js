@@ -270,6 +270,7 @@ async function main() {
         // 💡 Adminが代理でミントし、所有権を seller に渡す
         await hotelNFT.connect(admin).mintHotelNFT(seller.address, metadata, tokenURI, nft.amenities);
         console.log(`Minted NFT #${tokenId}: ${nft.name} (Owner: ${seller.address.slice(0, 6)}...)`);
+        await hotelNFT.connect(seller).setForSale(tokenId, true);
     } catch (e) {
         console.error(`❌ Failed to mint NFT #${tokenId} (${nft.name}):`, e.message);
     }
