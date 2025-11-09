@@ -1,9 +1,10 @@
 // src/components/Header.tsx
-"use client";
+"use client"; // 💡 これを追加してクライアントコンポーネントにする
 
 import React from 'react';
 import Link from 'next/link';
-import WalletConnect from './WalletConnect';
+// WalletConnect コンポーネントをインポート（パスは環境に合わせて調整してください）
+import WalletConnect from './WalletConnect'; 
 
 export default function Header() {
   return (
@@ -22,8 +23,14 @@ export default function Header() {
           <nav className="hidden md:block">
             <ul className="flex space-x-6">
               <li>
-                <Link href="/explore" className="text-white text-lg font-medium hover:text-indigo-200 transition duration-300">
+                <Link href="/" className="text-white text-lg font-medium hover:text-indigo-200 transition duration-300">
                   探す
+                </Link>
+              </li>
+              {/* 💡 追加: マイページへのリンク */}
+              <li>
+                <Link href="/mypage" className="text-white text-lg font-medium hover:text-indigo-200 transition duration-300">
+                  マイページ
                 </Link>
               </li>
               <li>
@@ -31,13 +38,10 @@ export default function Header() {
                   使い方
                 </Link>
               </li>
-              <li>
-                <Link href="/contact" className="text-white text-lg font-medium hover:text-indigo-200 transition duration-300">
-                  お問い合わせ
-                </Link>
-              </li>
             </ul>
           </nav>
+          
+          {/* 💡 WalletConnectコンポーネントをここに配置 */}
           <WalletConnect />
         </div>
         

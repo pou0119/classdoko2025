@@ -1,26 +1,40 @@
-// components/WalletConnect.tsx
+// src/components/WalletConnect.tsx
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { injected } from 'wagmi/connectors';
 
 export default function WalletConnect() {
   const { address, isConnected } = useAccount();
-  const { connect, isPending, error } = useConnect();
+  const { connect } = useConnect();
   const { disconnect } = useDisconnect();
+  const [isMounted, setIsMounted] = useState(false);
+
+  // 💡 クライアントサイドでマウントされたことを確認
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // 💡 マウントされるまでは何も表示しない（ハイドレーションエラー回避）
+  if (!isMounted) {
+    return null; 
+    // または、レイアウトシフトを防ぐために同じサイズのプレースホルダーを返す
+    // return <div className="w-[120px] h-[40px] bg-indigo-400/20 rounded-full animate-pulse" />;
+  }
 
   if (isConnected) {
     return (
-      <div className="flex items-center gap-4">
-        <div className="text-sm text-white">
-          <span className="font-semibold">接続中:</span>{' '}
+      <div className="flex flex-col items-end gap-1">
+        <div className="text-sm text-white font-medium flex items-center bg-indigo-800/50 px-3 py-1 rounded-full">
+          <span className="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
           <span className="font-mono">
             {address?.slice(0, 6)}...{address?.slice(-4)}
           </span>
         </div>
         <button
           onClick={() => disconnect()}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full text-sm font-semibold transition duration-200 shadow-lg"
+          className="text-xs text-indigo-200 hover:text-white transition underline"
         >
           切断
         </button>
@@ -29,22 +43,11 @@ export default function WalletConnect() {
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
-      <button
-        onClick={() => connect({ connector: injected() })}
-        disabled={isPending}
-        className="bg-white text-indigo-700 px-6 py-2 rounded-full text-sm font-semibold hover:bg-indigo-100 transition duration-200 shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {isPending ? '接続中...' : 'ウォレット接続'}
-      </button>
-      {error && (
-        <span className="text-xs text-red-200">
-          {error.message.includes('No injected connector found') 
-            ? 'MetaMaskをインストールしてください' 
-            : '接続エラー'}
-        </span>
-      )}
-    </div>
+    <button
+      onClick={() => connect({ connector: injected() })}
+      className="bg-white text-indigo-700 px-6 py-2 rounded-full text-sm font-bold hover:bg-indigo-50 transition duration-300 shadow-md transform hover:scale-105 active:scale-95"
+    >
+      ウォレット接続
+    </button>
   );
 }
-

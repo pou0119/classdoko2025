@@ -1,6 +1,6 @@
 // src/lib/blockchain.ts
 import { createPublicClient, http, formatEther, Address, defineChain } from 'viem';
-import { HotelNft } from './../data/nftMocks';
+import { HotelNft } from '@/src/data/nftMocks';
 
 // ローカルHardhatネットワークの設定
 export const localChain = defineChain({
@@ -18,7 +18,6 @@ export const localChain = defineChain({
   },
 });
 
-// パブリッククライアントの作成
 export const publicClient = createPublicClient({
   chain: localChain,
   transport: http(),
@@ -65,13 +64,6 @@ export const hotelNFTABI = [
     type: 'function',
   },
   {
-    inputs: [],
-    name: 'getAllTokenIds',
-    outputs: [{ internalType: 'uint256[]', name: '', type: 'uint256[]' }],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
     name: 'ownerOf',
     outputs: [{ internalType: 'address', name: '', type: 'address' }],
@@ -85,6 +77,7 @@ export const hotelNFTABI = [
     stateMutability: 'view',
     type: 'function',
   },
+  // 💡 追加: 販売状態を取得する関数のABI
   {
     inputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
     name: 'isForSale',
@@ -92,57 +85,32 @@ export const hotelNFTABI = [
     stateMutability: 'view',
     type: 'function',
   },
-  {
-    inputs: [{ internalType: 'uint256', name: 'tokenId', type: 'uint256' }],
-    name: 'purchaseNFT',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
 ] as const;
 
-/**
- * ブロックチェーンからNFTデータを取得
- */
 export async function fetchNFTsFromBlockchain(
   contractAddress: Address
 ): Promise<HotelNft[]> {
   try {
-    const contract = {
-      address: contractAddress,
-      abi: hotelNFTABI,
-    } as const;
+    const contract = { address: contractAddress, abi: hotelNFTABI } as const;
+    const totalSupply = await publicClient.readContract({ ...contract, functionName: 'getTotalSupply' });
 
-    const totalSupply = await publicClient.readContract({
-      ...contract,
-      functionName: 'getTotalSupply',
-    });
-
-    // 💡 修正箇所: 0n ではなく BigInt(0) を使用
-    if (totalSupply === BigInt(0)) {
-      return [];
-    }
+    if (totalSupply === BigInt(0)) return [];
 
     const tokenIds = Array.from({ length: Number(totalSupply) }, (_, i) => BigInt(i + 1));
 
     const nfts: HotelNft[] = await Promise.all(
       tokenIds.map(async (tokenId) => {
-        // 注意: isForSale は現在のHotelNFT.solにはpublicマッピングとして存在しますが、
-        // 明示的なゲッター関数がない場合、自動生成されたゲッターを使います。
-        // もしエラーが出る場合は、ABIに `isForSale` が含まれているか確認してください。
-        // 今回のABIには含まれているため、そのままにします。
-        const [metadata, owner, tokenURI] = await Promise.all([
-            publicClient.readContract({ ...contract, functionName: 'getHotelMetadata', args: [tokenId] }),
-            publicClient.readContract({ ...contract, functionName: 'ownerOf', args: [tokenId] }),
-            publicClient.readContract({ ...contract, functionName: 'tokenURI', args: [tokenId] }),
+        // 💡 isForSale も一緒に取得する
+        const [metadata, owner, tokenURI, isForSale] = await Promise.all([
+          publicClient.readContract({ ...contract, functionName: 'getHotelMetadata', args: [tokenId] }),
+          publicClient.readContract({ ...contract, functionName: 'ownerOf', args: [tokenId] }),
+          publicClient.readContract({ ...contract, functionName: 'tokenURI', args: [tokenId] }),
+          // 💡 ここでブロックチェーンから実際の販売状態を取得
+          publicClient.readContract({ ...contract, functionName: 'isForSale', args: [tokenId] }),
         ]);
 
-        const formatTimestamp = (timestamp: bigint): string => {
-          return new Date(Number(timestamp) * 1000).toISOString();
-        };
-
         return {
-          id: tokenId.toString(), // 10進数文字列で統一
+          id: tokenId.toString(),
           name: metadata.name,
           location: {
             region: metadata.region,
@@ -152,18 +120,19 @@ export async function fetchNFTsFromBlockchain(
           },
           description: metadata.description,
           imageUrl: metadata.imageUrl,
-          priceEth: parseFloat(formatEther(metadata.priceEth)),
+          priceEth: Number(formatEther(metadata.priceEth)),
           priceJpy: Number(metadata.priceJpy),
-          purchaseDeadline: formatTimestamp(metadata.purchaseDeadline),
+          purchaseDeadline: new Date(Number(metadata.purchaseDeadline) * 1000).toISOString(),
           nights: Number(metadata.nights),
           isConfirmed: metadata.isConfirmed,
           hasMeals: metadata.hasMeals,
           guests: Number(metadata.guests),
-          checkInDate: formatTimestamp(metadata.checkInDate),
-          checkOutDate: formatTimestamp(metadata.checkOutDate),
-          amenities: [], // 現状は空配列
+          checkInDate: new Date(Number(metadata.checkInDate) * 1000).toISOString(),
+          checkOutDate: new Date(Number(metadata.checkOutDate) * 1000).toISOString(),
+          amenities: [], 
           ownerAddress: owner,
           tokenUri: tokenURI,
+          isForSale: isForSale, // 💡 取得した本物の販売状態をセット
         };
       })
     );
@@ -171,7 +140,6 @@ export async function fetchNFTsFromBlockchain(
     return nfts;
   } catch (error) {
     console.error('Error fetching NFTs from blockchain:', error);
-    // エラー時は空配列を返す（モックデータへのフォールバックはコンポーネント側で行う）
     return [];
   }
 }
