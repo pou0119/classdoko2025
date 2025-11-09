@@ -29,7 +29,6 @@ export default function MyPage() {
         const allNfts = await fetchNFTsFromBlockchain(HOTEL_NFT_CONTRACT_ADDRESS as Address);
         
         // 💡 自分のアドレスが所有者のNFTだけをフィルタリング
-        // アドレスは大文字小文字を区別しないように比較する
         const filtered = allNfts.filter(
           nft => nft.ownerAddress.toLowerCase() === address.toLowerCase()
         );
@@ -81,9 +80,12 @@ export default function MyPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {myNfts.map(nft => (
-              // 所持NFTなので、購入ボタンなどは非表示にするカスタマイズも可能だが、
-              // まずは同じカードコンポーネントを表示する
-              <NftCard key={nft.id} nft={nft} />
+              // 💡 修正箇所: mode プロパティを追加し、販売状態に応じて切り替える
+              <NftCard 
+                  key={nft.id} 
+                  nft={nft} 
+                  mode={nft.isForSale ? 'listing' : 'sell'} 
+              />
             ))}
           </div>
         )}

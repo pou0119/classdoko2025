@@ -1,3 +1,8 @@
+// scripts/deploy.js
+import hre from "hardhat";
+const { ethers } = hre;
+
+// 💡 モックデータ (合計25個)
 // 💡 すべてリアルな画像に差し替えたモックデータ (合計25個)
 const hotelNfts = [
   // --- 既存の10個 ---
@@ -210,3 +215,74 @@ const hotelNfts = [
     ownerAddress: "0xffff...ffff", tokenUri: "ipfs://metadata025.json",
   },
 ];
+
+async function main() {
+  const [deployer] = await ethers.getSigners();
+
+  console.log("Deploying contracts with the account:", deployer.address);
+  console.log("Account balance:", (await ethers.provider.getBalance(deployer.address)).toString());
+
+  const HotelNFTFactory = await ethers.getContractFactory("HotelNFT");
+  const hotelNFT = await HotelNFTFactory.deploy(deployer.address);
+
+  await hotelNFT.waitForDeployment();
+
+  const address = await hotelNFT.getAddress();
+  console.log("HotelNFT deployed to:", address);
+
+  console.log("\nMinting sample NFTs...");
+  
+  // 💡 タイムスタンプ生成ヘルパー (秒単位)
+  const getTimestamp = (dateString) => Math.floor(new Date(dateString).getTime() / 1000);
+
+  // 💡 全てのモックデータをミントするループ
+  for (let i = 0; i < hotelNfts.length; i++) {
+    const nft = hotelNfts[i];
+    
+    // 構造体に合わせてデータを整形 (Solidityの定義順と数に合わせる)
+    const metadata = {
+        name: nft.name,
+        region: nft.location.region,
+        prefecture: nft.location.prefecture,
+        area: nft.location.area,
+        addressLine: nft.location.address,
+        description: nft.description,
+        imageUrl: nft.imageUrl,
+        // Ethers.js v6 の parseEther を使用
+        priceEth: ethers.parseEther(nft.priceEth.toString()), 
+        priceJpy: BigInt(nft.priceJpy),
+        // 💡 タイムスタンプを BigInt に変換
+        purchaseDeadline: BigInt(getTimestamp(nft.purchaseDeadline)),
+        nights: BigInt(nft.nights),
+        isConfirmed: nft.isConfirmed,
+        hasMeals: nft.hasMeals,
+        guests: BigInt(nft.guests),
+        checkInDate: BigInt(getTimestamp(nft.checkInDate)),
+        checkOutDate: BigInt(getTimestamp(nft.checkOutDate)),
+    };
+    
+    // トークンIDはインデックス+1を使用
+    const tokenId = i + 1;
+    const tokenURI = nft.tokenUri || `ipfs://default_uri_${tokenId}`;
+
+    // mintHotelNFT の呼び出し (4つ目の引数として amenities を渡す)
+    try {
+        await hotelNFT.mintHotelNFT(deployer.address, metadata, tokenURI, nft.amenities);
+        console.log(`Minted NFT #${tokenId}: ${nft.name}`);
+    } catch (e) {
+        console.error(`❌ Failed to mint NFT #${tokenId} (${nft.name}):`, e.message);
+    }
+  }
+
+  const totalSupply = await hotelNFT.getTotalSupply();
+  console.log("\nDeployment and minting completed!");
+  console.log("Total NFTs on chain:", totalSupply.toString());
+  console.log("Contract address:", address);
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
